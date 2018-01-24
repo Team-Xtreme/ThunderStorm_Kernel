@@ -195,13 +195,11 @@ static int wm8997_sysclk_ev(struct snd_soc_dapm_widget *w,
 				regmap_write(regmap, patch[i].reg,
 					     patch[i].def);
 		break;
-	case SND_SOC_DAPM_PRE_PMD:
-		break;
 	default:
-		return 0;
+		break;
 	}
 
-	return arizona_dvfs_sysclk_ev(w, kcontrol, event);
+	return 0;
 }
 
 static const char * const wm8997_osr_text[] = {
@@ -325,13 +323,14 @@ SOC_ENUM("LHPF2 Mode", arizona_lhpf2_mode),
 SOC_ENUM("LHPF3 Mode", arizona_lhpf3_mode),
 SOC_ENUM("LHPF4 Mode", arizona_lhpf4_mode),
 
-ARIZONA_LHPF_CONTROL("LHPF1 Coefficients", ARIZONA_HPLPF1_2),
-ARIZONA_LHPF_CONTROL("LHPF2 Coefficients", ARIZONA_HPLPF2_2),
-ARIZONA_LHPF_CONTROL("LHPF3 Coefficients", ARIZONA_HPLPF3_2),
-ARIZONA_LHPF_CONTROL("LHPF4 Coefficients", ARIZONA_HPLPF4_2),
+SND_SOC_BYTES("LHPF1 Coefficients", ARIZONA_HPLPF1_2, 1),
+SND_SOC_BYTES("LHPF2 Coefficients", ARIZONA_HPLPF2_2, 1),
+SND_SOC_BYTES("LHPF3 Coefficients", ARIZONA_HPLPF3_2, 1),
+SND_SOC_BYTES("LHPF4 Coefficients", ARIZONA_HPLPF4_2, 1),
 
 SOC_VALUE_ENUM("ISRC1 FSL", arizona_isrc_fsl[0]),
 SOC_VALUE_ENUM("ISRC2 FSL", arizona_isrc_fsl[1]),
+SOC_VALUE_ENUM("ASRC RATE 1", arizona_asrc_rate1),
 
 ARIZONA_MIXER_CONTROLS("Mic", ARIZONA_MICMIX_INPUT_1_SOURCE),
 ARIZONA_MIXER_CONTROLS("Noise", ARIZONA_NOISEMIX_INPUT_1_SOURCE),
@@ -494,8 +493,7 @@ static const struct snd_kcontrol_new wm8997_aec_loopback_mux =
 
 static const struct snd_soc_dapm_widget wm8997_dapm_widgets[] = {
 SND_SOC_DAPM_SUPPLY("SYSCLK", ARIZONA_SYSTEM_CLOCK_1, ARIZONA_SYSCLK_ENA_SHIFT,
-		    0, wm8997_sysclk_ev,
-		    SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
+		    0, wm8997_sysclk_ev, SND_SOC_DAPM_POST_PMU),
 SND_SOC_DAPM_SUPPLY("ASYNCCLK", ARIZONA_ASYNC_CLOCK_1,
 		    ARIZONA_ASYNC_CLK_ENA_SHIFT, 0, NULL, 0),
 SND_SOC_DAPM_SUPPLY("OPCLK", ARIZONA_OUTPUT_SYSTEM_CLOCK,
@@ -510,7 +508,7 @@ SND_SOC_DAPM_REGULATOR_SUPPLY("SPKVDD", 0, 0),
 
 SND_SOC_DAPM_SIGGEN("TONE"),
 SND_SOC_DAPM_SIGGEN("NOISE"),
-SND_SOC_DAPM_MIC("HAPTICS", NULL),
+SND_SOC_DAPM_SIGGEN("HAPTICS"),
 
 SND_SOC_DAPM_INPUT("IN1L"),
 SND_SOC_DAPM_INPUT("IN1R"),
@@ -696,16 +694,13 @@ SND_SOC_DAPM_VALUE_MUX("AEC Loopback", ARIZONA_DAC_AEC_CONTROL_1,
 
 SND_SOC_DAPM_PGA_E("OUT1L", SND_SOC_NOPM,
 		   ARIZONA_OUT1L_ENA_SHIFT, 0, NULL, 0, arizona_hp_ev,
-		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD |
-		   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU),
+		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 SND_SOC_DAPM_PGA_E("OUT1R", SND_SOC_NOPM,
 		   ARIZONA_OUT1R_ENA_SHIFT, 0, NULL, 0, arizona_hp_ev,
-		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD |
-		   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU),
+		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 SND_SOC_DAPM_PGA_E("OUT3L", ARIZONA_OUTPUT_ENABLES_1,
 		   ARIZONA_OUT3L_ENA_SHIFT, 0, NULL, 0, arizona_out_ev,
-		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMD |
-		   SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMU),
+		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 SND_SOC_DAPM_PGA_E("OUT5L", ARIZONA_OUTPUT_ENABLES_1,
 		   ARIZONA_OUT5L_ENA_SHIFT, 0, NULL, 0, arizona_out_ev,
 		   SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -1030,7 +1025,7 @@ static int wm8997_set_fll(struct snd_soc_codec *codec, int fll_id, int source,
 	}
 }
 
-#define WM8997_RATES SNDRV_PCM_RATE_KNOT
+#define WM8997_RATES SNDRV_PCM_RATE_8000_192000
 
 #define WM8997_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
@@ -1212,8 +1207,6 @@ static int wm8997_probe(struct platform_device *pdev)
 
 	wm8997->core.arizona = arizona;
 	wm8997->core.num_inputs = 4;
-
-	arizona_init_dvfs(&wm8997->core);
 
 	for (i = 0; i < ARRAY_SIZE(wm8997->fll); i++)
 		wm8997->fll[i].vco_mult = 1;

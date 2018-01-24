@@ -21,7 +21,7 @@
 #define VEGAS_NUM_AOD_ISR 2
 #define VEGAS_NUM_ISR 5
 
-static const struct reg_sequence vegas_rev_a_patch[] = {
+static const struct reg_default vegas_rev_a_patch[] = {
 	{ 0x0212, 0x0000 },
 	{ 0x0211, 0x0014 },
 	{ 0x04E4, 0x0E0D },
@@ -200,6 +200,8 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000069, 0x01FF },    /* R105   - Always On Triggers Sequence Select 4 */
 	{ 0x0000006A, 0x01FF },    /* R106   - Always On Triggers Sequence Select 5 */
 	{ 0x0000006B, 0x01FF },    /* R107   - Always On Triggers Sequence Select 6 */
+	{ 0x0000006E, 0x01FF },    /* R110   - Trigger Sequence Select 32 */
+	{ 0x0000006F, 0x01FF },    /* R111   - Trigger Sequence Select 33 */
 	{ 0x00000090, 0x0000 },    /* R144   - Haptics Control 1 */
 	{ 0x00000091, 0x7FFF },    /* R145   - Haptics Control 2 */
 	{ 0x00000092, 0x0000 },    /* R146   - Haptics phase 1 intensity */
@@ -230,6 +232,8 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000174, 0x007D },    /* R372   - FLL1 Control 4 */
 	{ 0x00000175, 0x0004 },    /* R373   - FLL1 Control 5 */
 	{ 0x00000176, 0x0000 },    /* R374   - FLL1 Control 6 */
+	{ 0x00000177, 0x0181 },    /* R375   - FLL1 Loop Filter Test 1 */
+	{ 0x00000178, 0x0000 },    /* R376   - FLL1 NCO Test 0 */
 	{ 0x00000179, 0x0000 },    /* R377   - FLL1 Control 7 */
 	{ 0x00000181, 0x0000 },    /* R385   - FLL1 Synchroniser 1 */
 	{ 0x00000182, 0x0000 },    /* R386   - FLL1 Synchroniser 2 */
@@ -246,6 +250,8 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000194, 0x007D },    /* R404   - FLL2 Control 4 */
 	{ 0x00000195, 0x0004 },    /* R405   - FLL2 Control 5 */
 	{ 0x00000196, 0x0000 },    /* R406   - FLL2 Control 6 */
+	{ 0x00000197, 0x0000 },    /* R407   - FLL2 Loop Filter Test 1 */
+	{ 0x00000198, 0x0000 },    /* R408   - FLL2 NCO Test 0 */
 	{ 0x00000199, 0x0000 },    /* R409   - FLL2 Control 7 */
 	{ 0x000001A1, 0x0000 },    /* R417   - FLL2 Synchroniser 1 */
 	{ 0x000001A2, 0x0000 },    /* R418   - FLL2 Synchroniser 2 */
@@ -265,13 +271,16 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x0000021A, 0x01A6 },    /* R538   - Mic Bias Ctrl 3 */
 	{ 0x00000293, 0x0080 },    /* R659   - Accessory Detect Mode 1 */
 	{ 0x0000029B, 0x0000 },    /* R667   - Headphone Detect 1 */
+	{ 0x0000029C, 0x0000 },    /* R668   - Headphone Detect 2 */
 	{ 0x000002A2, 0x0000 },    /* R674   - Micd Clamp control */
 	{ 0x000002A3, 0x1102 },    /* R675   - Mic Detect 1 */
 	{ 0x000002A4, 0x009F },    /* R676   - Mic Detect 2 */
+	{ 0x000002A5, 0x0000 },    /* R677   - Mic Detect 3 */
 	{ 0x000002A6, 0x3737 },    /* R678   - Mic Detect Level 1 */
 	{ 0x000002A7, 0x2C37 },    /* R679   - Mic Detect Level 2 */
 	{ 0x000002A8, 0x1422 },    /* R680   - Mic Detect Level 3 */
 	{ 0x000002A9, 0x030A },    /* R681   - Mic Detect Level 4 */
+	{ 0x000002AB, 0x0000 },    /* R683   - Mic Detect 4 */
 	{ 0x000002CB, 0x0000 },    /* R715   - Isolation control */
 	{ 0x000002D3, 0x0000 },    /* R723   - Jack detect analogue */
 	{ 0x00000300, 0x0000 },    /* R768   - Input Enables */
@@ -317,7 +326,7 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000434, 0x0000 },    /* R1076  - Output Path Config 5R */
 	{ 0x00000435, 0x0180 },    /* R1077  - DAC Digital Volume 5R */
 	{ 0x00000437, 0x0200 },    /* R1079  - Noise Gate Select 5R */
-	{ 0x00000440, 0x002F },    /* R1088  - DRE Enable */
+	{ 0x00000440, 0x8FFF },    /* R1088  - DRE Enable */
 	{ 0x00000441, 0xC759 },    /* R1089  - DRE Control 1 */
 	{ 0x00000442, 0x2A08 },    /* R1089  - DRE Control 2 */
 	{ 0x00000443, 0x5CFA },    /* R1089  - DRE Control 3 */
@@ -333,7 +342,6 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000502, 0x0000 },    /* R1282  - AIF1 Rx Pin Ctrl */
 	{ 0x00000503, 0x0000 },    /* R1283  - AIF1 Rate Ctrl */
 	{ 0x00000504, 0x0000 },    /* R1284  - AIF1 Format */
-	{ 0x00000505, 0x0040 },    /* R1285  - AIF1 Tx BCLK Rate */
 	{ 0x00000506, 0x0040 },    /* R1286  - AIF1 Rx BCLK Rate */
 	{ 0x00000507, 0x1818 },    /* R1287  - AIF1 Frame Ctrl 1 */
 	{ 0x00000508, 0x1818 },    /* R1288  - AIF1 Frame Ctrl 2 */
@@ -684,7 +692,7 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000C10, 0x1000 },    /* R3088  - GPIO Debounce Config */
 	{ 0x00000C18, 0x0000 },    /* R3096  - GP Switch 1 */
 	{ 0x00000C20, 0x8002 },    /* R3104  - Misc Pad Ctrl 1 */
-	{ 0x00000C21, 0x0001 },    /* R3105  - Misc Pad Ctrl 2 */
+	{ 0x00000C21, 0x8001 },    /* R3105  - Misc Pad Ctrl 2 */
 	{ 0x00000C22, 0x0000 },    /* R3106  - Misc Pad Ctrl 3 */
 	{ 0x00000C23, 0x0000 },    /* R3107  - Misc Pad Ctrl 4 */
 	{ 0x00000C24, 0x0000 },    /* R3108  - Misc Pad Ctrl 5 */
@@ -700,11 +708,13 @@ static const struct reg_default vegas_reg_default[] = {
 	{ 0x00000D1A, 0xFFFF },    /* R3354  - IRQ2 Status 3 Mask */
 	{ 0x00000D1B, 0xFFFF },    /* R3355  - IRQ2 Status 4 Mask */
 	{ 0x00000D1C, 0xFEFF },    /* R3356  - IRQ2 Status 5 Mask */
+	{ 0x00000D1D, 0xFFFF },    /* R3357  - IRQ2 Status 6 Mask */
 	{ 0x00000D1F, 0x0000 },    /* R3359  - IRQ2 Control */
 	{ 0x00000D53, 0xFFFF },    /* R3411  - AOD IRQ Mask IRQ1 */
 	{ 0x00000D54, 0xFFFF },    /* R3412  - AOD IRQ Mask IRQ2 */
 	{ 0x00000D56, 0x0000 },    /* R3414  - Jack detect debounce */
 	{ 0x00000E00, 0x0000 },    /* R3584  - FX_Ctrl1 */
+	{ 0x00000E01, 0x0000 },    /* R3585  - FX_Ctrl2 */
 	{ 0x00000E10, 0x6318 },    /* R3600  - EQ1_1 */
 	{ 0x00000E11, 0x6300 },    /* R3601  - EQ1_2 */
 	{ 0x00000E12, 0x0FC8 },    /* R3602  - EQ1_3 */
@@ -824,6 +834,7 @@ static bool vegas_readable_register(struct device *dev, unsigned int reg)
 	switch (reg) {
 	case ARIZONA_SOFTWARE_RESET:
 	case ARIZONA_DEVICE_REVISION:
+	case ARIZONA_CTRL_IF_SPI_CFG_1:
 	case ARIZONA_CTRL_IF_I2C1_CFG_1:
 	case ARIZONA_CTRL_IF_I2C1_CFG_2:
 	case ARIZONA_WRITE_SEQUENCER_CTRL_0:
@@ -886,6 +897,8 @@ static bool vegas_readable_register(struct device *dev, unsigned int reg)
 	case ARIZONA_FLL1_CONTROL_5:
 	case ARIZONA_FLL1_CONTROL_6:
 	case ARIZONA_FLL1_CONTROL_7:
+	case ARIZONA_FLL1_LOOP_FILTER_TEST_1:
+	case ARIZONA_FLL1_NCO_TEST_0:
 	case ARIZONA_FLL1_SYNCHRONISER_1:
 	case ARIZONA_FLL1_SYNCHRONISER_2:
 	case ARIZONA_FLL1_SYNCHRONISER_3:
@@ -902,6 +915,8 @@ static bool vegas_readable_register(struct device *dev, unsigned int reg)
 	case ARIZONA_FLL2_CONTROL_5:
 	case ARIZONA_FLL2_CONTROL_6:
 	case ARIZONA_FLL2_CONTROL_7:
+	case ARIZONA_FLL2_LOOP_FILTER_TEST_1:
+	case ARIZONA_FLL2_NCO_TEST_0:
 	case ARIZONA_FLL2_SYNCHRONISER_1:
 	case ARIZONA_FLL2_SYNCHRONISER_2:
 	case ARIZONA_FLL2_SYNCHRONISER_3:
@@ -918,8 +933,6 @@ static bool vegas_readable_register(struct device *dev, unsigned int reg)
 	case ARIZONA_MIC_BIAS_CTRL_1:
 	case ARIZONA_MIC_BIAS_CTRL_2:
 	case ARIZONA_MIC_BIAS_CTRL_3:
-	case ARIZONA_HP_CTRL_1L:
-	case ARIZONA_HP_CTRL_1R:
 	case ARIZONA_ACCESSORY_DETECT_MODE_1:
 	case ARIZONA_HEADPHONE_DETECT_1:
 	case ARIZONA_HEADPHONE_DETECT_2:
@@ -991,13 +1004,11 @@ static bool vegas_readable_register(struct device *dev, unsigned int reg)
 	case ARIZONA_PDM_SPK1_CTRL_1:
 	case ARIZONA_PDM_SPK1_CTRL_2:
 	case ARIZONA_HP_TEST_CTRL_13:
-	case ARIZONA_SPK_CTRL_5:
 	case ARIZONA_AIF1_BCLK_CTRL:
 	case ARIZONA_AIF1_TX_PIN_CTRL:
 	case ARIZONA_AIF1_RX_PIN_CTRL:
 	case ARIZONA_AIF1_RATE_CTRL:
 	case ARIZONA_AIF1_FORMAT:
-	case ARIZONA_AIF1_TX_BCLK_RATE:
 	case ARIZONA_AIF1_RX_BCLK_RATE:
 	case ARIZONA_AIF1_FRAME_CTRL_1:
 	case ARIZONA_AIF1_FRAME_CTRL_2:
@@ -1529,8 +1540,6 @@ static bool vegas_volatile_register(struct device *dev, unsigned int reg)
 	case ARIZONA_ASYNC_SAMPLE_RATE_2_STATUS:
 	case ARIZONA_MIC_DETECT_3:
 	case ARIZONA_MIC_DETECT_4:
-	case ARIZONA_HP_CTRL_1L:
-	case ARIZONA_HP_CTRL_1R:
 	case ARIZONA_HEADPHONE_DETECT_2:
 	case ARIZONA_INPUT_ENABLES_STATUS:
 	case ARIZONA_OUTPUT_STATUS_1:
